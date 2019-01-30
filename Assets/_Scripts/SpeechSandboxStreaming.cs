@@ -309,7 +309,7 @@ public class SpeechSandboxStreaming : MonoBehaviour
                         //_conversation.Message(OnMessage, OnFail, assistantWorkspaceId, text);
 
                         // Process found String
-                        speechDecoder.CommandsFinder(text);
+                        SpeechDecoder.CommandTransmitter(text);
              
                     }
                 }

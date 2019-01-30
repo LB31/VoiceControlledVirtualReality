@@ -4,11 +4,22 @@ using UnityEngine;
 
 public class SpeechCreate : MonoBehaviour
 {
-    
+
+    [SerializeField]
+    string[] PossibleCreateCommands;
+    [SerializeField]
+    public GameObject[] AllPrefabs;
+
+    private bool FoundCreateCommand;
+    private GameObject FoundPrefab;
+
     void Start()
     {
-        // Registrate this class to get notified, when the user entered a message
-        SpeechDecoder.InteractionEvent.AddListener(CreateObject);
+        PossibleCreateCommands = new string[] { "produce", "initiate", "generate", "form", "build", "construct", "give", "create", "spawn", "make", "instantiate" };
+        AllPrefabs = Resources.LoadAll<GameObject>("Prefabs");
+
+        // Register this class to get notified, when the user entered a message
+        SpeechDecoder.CommandTransmitter += CreateObject;
     }
 
     
@@ -17,11 +28,15 @@ public class SpeechCreate : MonoBehaviour
         
     }
 
-    void CreateObject() {
-        
-            if (SpeechDecoder.FoundCreateCommand && SpeechDecoder.FoundPrefab != null) {
+    void CreateObject(string command) {
+
+        FoundCreateCommand = SpeechDecoder.FindCommand(command, PossibleCreateCommands);
+        FoundPrefab = SpeechDecoder.FindPrefab(command, AllPrefabs);
+
+        if (FoundCreateCommand && FoundPrefab != null) {
+            SpeechDecoder.CommandWasFound = true;
             Vector3 pointToSpawn = new Vector3(RayCaster.spawnPoint.x, RayCaster.spawnPoint.y + 3, RayCaster.spawnPoint.z);
-            Instantiate(SpeechDecoder.FoundPrefab, pointToSpawn, Quaternion.identity);
+            Instantiate(FoundPrefab, pointToSpawn, Quaternion.identity);
             }
 
         }

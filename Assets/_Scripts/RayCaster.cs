@@ -31,6 +31,7 @@ public class RayCaster : MonoBehaviour
         spawnPoint = ray.GetPoint(maxDistanceCreate);
 
         Debug.DrawRay(transform.position, fwd * maxDistanceBottom, Color.red);
+
         if (Physics.Raycast(RayOrigin.position, fwd, out hit, maxDistanceBottom)) {
             // When a wall was hit, create the object slightly in front of it
             hitWall = hit.transform.CompareTag("Wall");
@@ -46,10 +47,8 @@ public class RayCaster : MonoBehaviour
                 hitItem = hit.transform.CompareTag("Item") && hit.distance <= maxDistanceItem;
                 
                 // Expands the ReticlePointer
-                if (hitBottom || hitItem) {
                     et = hit.transform.GetComponent<InteractableOnPoint>();
-                    et.enabled = true;        
-                }
+                    et.enabled = hitBottom || hitItem;        
             }
 
         } else {

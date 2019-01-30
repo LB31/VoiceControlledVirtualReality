@@ -6,6 +6,7 @@ using UnityEngine;
 public class SpeechTeleport : MonoBehaviour
 {
 
+    // For testing with the inspector
     public bool go;
 
     private bool teleporting;
@@ -15,38 +16,36 @@ public class SpeechTeleport : MonoBehaviour
 
     public float teleportSpeed = 50;
 
+    [SerializeField]
+    string[] PossibleMoveCommands;
+
+
+    private bool FoundMoveCommand;
+
 
     void Start() {
-        // Registrate this class to get notified, when the user entered a message
-        SpeechDecoder.InteractionEvent.AddListener(TeleportPlayer);
+        PossibleMoveCommands = new string[] { "move", "go", "teleport", "drive" };
+        // Register this class to get notified, when the user entered a message
+        SpeechDecoder.CommandTransmitter += TeleportPlayer;
         
     }
 
-    void TeleportPlayer() {
+    void TeleportPlayer(string command) {
+        FoundMoveCommand = SpeechDecoder.FindCommand(command, PossibleMoveCommands);
 
-        if (SpeechDecoder.FoundMoveCommand /* || go */) {
-
-            
-
+        if (FoundMoveCommand /* || go */) {
+            SpeechDecoder.CommandWasFound = true;
             if (RayCaster.hitBottom) {
-
                 sentHit = RayCaster.hit;
                 posToMove = new Vector3(sentHit.point.x, transform.position.y, sentHit.point.z);
                 teleporting = true;
-
-                // Debug
-                //GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                //sphere.transform.position = sentHit.point;
             }
+
         }
+
     }
 
     private void Update() {
-        // Debug
-        //if (go) {
-        //    TeleportPlayer();
-        //    go = false;
-        //}
         if (teleporting) {
             Vector3 maxDistanceDelta = Vector3.MoveTowards(transform.position, posToMove, Time.deltaTime * teleportSpeed);
             transform.position = maxDistanceDelta;
@@ -56,9 +55,6 @@ public class SpeechTeleport : MonoBehaviour
             }
         }
     }
-
-
-
 
 
     }

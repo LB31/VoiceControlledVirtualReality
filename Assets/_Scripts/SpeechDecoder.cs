@@ -16,40 +16,43 @@ public class SpeechDecoder : MonoBehaviour
     public GyroController gc;
 
     public delegate void AllCommandsFinder(string wholeCommand);
-    public AllCommandsFinder CommandsFinder;
+    public static AllCommandsFinder CommandTransmitter;
 
-    public static UnityEvent InteractionEvent = new UnityEvent();
 
-    [SerializeField]
-    public GameObject[] AllPrefabs;
-    //[SerializeField]
-    //string[] PossiblePrefabs = { "CubeMonster", "cube", "sphere", "cylinder", "capsule" }; // more to come
-    [SerializeField]
-    string[] PossibleCreateCommands;
-    [SerializeField]
-    string[] PossibleMoveCommands;
-    [SerializeField]
-    string[] PossibleMenuCommands;
+    public static bool CommandWasFound;
 
-    // Markers for what was found
-    public static GameObject FoundPrefab;
-    public static bool FoundCreateCommand;
-    public static bool FoundMoveCommand;
-    public static bool FoundMenuCommand;
+    public Behaviour[] behaviours;
 
 
     void Start() {
-            // TODO: Source this out into a game manager
-            // Decide which speech recognition system should be used
-            if (PlayerPrefs.HasKey("RecognitionType")) {
+
+
+        CheckStartMenuSettings();
+
+        StartCoroutine(RegisterRepresenterAfterSeconds(2));
+
+        behaviours = gameObject.GetComponentsInChildren<Behaviour>();
+        foreach (var item in behaviours) {
+            item.enabled = false;
+        }
+    }
+
+    // Ensures that the command representer is at the last position of the delegate
+    IEnumerator RegisterRepresenterAfterSeconds(int seconds) {
+        yield return new WaitForSeconds(seconds);
+        CommandTransmitter += RepresentIfCommandFound;
+    }
+
+    private void CheckStartMenuSettings() {
+        // Decide which speech recognition system should be used
+        if (PlayerPrefs.HasKey("RecognitionType")) {
             if (PlayerPrefs.GetString("RecognitionType") == "Watson") {
                 acs.enabled = false;
                 sss.enabled = true;
-            }
-            else if (PlayerPrefs.GetString("RecognitionType") == "Alexa") {
+            } else if (PlayerPrefs.GetString("RecognitionType") == "Alexa") {
                 acs.enabled = true;
                 sss.enabled = false;
-            } 
+            }
         } else {
             // Sets Watson by default when nothing was selected
             acs.enabled = false;
@@ -58,79 +61,34 @@ public class SpeechDecoder : MonoBehaviour
         // Check if the control by touch should be activated
         if (PlayerPrefs.GetInt("WithTouch") == 1)
             gc.enabled = true;
-
-
-        PossibleCreateCommands = new string[] { "produce", "initiate", "generate", "form", "build", "construct", "give", "create", "spawn", "make", "instantiate"};
-        PossibleMoveCommands = new string[] { "move", "go", "teleport", "drive" };
-        PossibleMenuCommands = new string[] { "menu", "pause", "stop", "help" };
-
-        AllPrefabs = Resources.LoadAll<GameObject>("Prefabs");
-
-        // Registers all finding methods to the delegate
-        CommandsFinder += FindCreateCommand;
-        CommandsFinder += FindPrefab;
-        CommandsFinder += FindMoveCommand;
-        CommandsFinder += FindMenuCommand;
-        // After all finding methods were called
-        CommandsFinder += SelectAction;
-
     }
 
-    void FindCreateCommand(string userCommand) {
-        if (PossibleCreateCommands.Any(userCommand.Contains)) {
-            FoundCreateCommand = true;
-        } else {
-            FoundCreateCommand = false;
+
+    // Can be called by each action class to test if one of their command words were used
+    public static bool FindCommand(string userCommand, string[] commandCollection) {
+        if (commandCollection.Any(userCommand.Contains)) {
+            return true;
         }
+
+        return false;
     }
 
-    void FindMoveCommand(string userCommand) {
-        if (PossibleMoveCommands.Any(userCommand.Contains)) {
-            FoundMoveCommand = true;
-        } else {
-            FoundMoveCommand = false;
-        }
-    }
 
-    void FindMenuCommand(string userCommand) {
-        if (PossibleMenuCommands.Any(userCommand.Contains)) {
-            FoundMenuCommand = true;
-        } else {
-            FoundMenuCommand = false;
-        }
-    }
-
-    void FindPrefab(string userCommand) {
+    public static GameObject FindPrefab(string userCommand, GameObject[] possibleObjects) {
         bool somethingFound = false;
-        foreach (GameObject prefab in AllPrefabs) {
+        foreach (GameObject prefab in possibleObjects) {
             if (userCommand.Contains(prefab.name.ToLower()) && !somethingFound) {
-                FoundPrefab = prefab;
-                somethingFound = true;
+                return prefab;
             }
         }
-        // If nothing was found, remove the value from the last command
-        if (!somethingFound) {
-            FoundPrefab = null;
-        }
+        return null;
     }
 
 
 
-    public void SelectAction(string wholeCommand) {
-        print(wholeCommand);
-        //if (FoundCreateCommand && FoundPrefab != null) {
-        //    Instantiate(FoundPrefab);
-        //    // TODO extract the interaction in a new class
-        //}
-
-        if(InteractionEvent != null)
-        InteractionEvent.Invoke();
-
-        bool commandFound = false;
-        if(FoundCreateCommand && FoundPrefab != null || FoundMoveCommand && RayCaster.hitBottom || FoundMenuCommand) {
-            commandFound = true;
-        }
-        StartCoroutine(IndicateIfCommandUnderstood(commandFound));
+    public void RepresentIfCommandFound(string wholeCommand) {
+        StartCoroutine(IndicateIfCommandUnderstood(CommandWasFound));
+        CommandWasFound = false;
     }
 
     IEnumerator IndicateIfCommandUnderstood(bool understood) {
@@ -138,6 +96,10 @@ public class SpeechDecoder : MonoBehaviour
             indicator.SetActive(true);
         }
         Color finalColor = understood ? Color.green : Color.red;
+        foreach (GameObject indicator in AllIndicators) {
+            indicator.GetComponent<Image>().color = finalColor;
+        }
+
         float fadeDuration = 0.5f;
         if (understood) {
 
@@ -165,17 +127,13 @@ public class SpeechDecoder : MonoBehaviour
     }
 
     void FadeInOut(Color color, float i) {
-        //int fadeDirection = fadeIn ? 1 : -1;
+        Color finalColor = color;
+        color.a = i;
+  
         foreach (GameObject indicator in AllIndicators) {
-            indicator.GetComponent<Image>().color = color;
+            indicator.GetComponent<Image>().color = finalColor;
         }
 
-            Color finalColor;
-            if (color == Color.red) finalColor = new Color(1, 0, 0, i);
-            else finalColor = new Color(0, 1, 0, i);
-            AllIndicators[0].GetComponent<Image>().color = finalColor;
-            AllIndicators[1].GetComponent<Image>().color = finalColor;
-        
     }
 
 
