@@ -15,6 +15,7 @@ public class SpeechTeleport : MonoBehaviour
     private Vector3 posToMove;
 
     public float teleportSpeed = 50;
+    public float maxDistanceBottom = 15;
 
     [SerializeField]
     string[] PossibleMoveCommands;
@@ -22,24 +23,29 @@ public class SpeechTeleport : MonoBehaviour
 
     private bool FoundMoveCommand;
 
+    private bool hitBottom;
+    
 
     void Start() {
         PossibleMoveCommands = new string[] { "move", "go", "teleport", "drive" };
         // Register this class to get notified, when the user entered a message
-        SpeechDecoder.CommandTransmitter += TeleportPlayer;
-        
+        SpeechDecoder.speechDecoder.CommandTransmitter += TeleportPlayer;
+
     }
 
     void TeleportPlayer(string command) {
-        FoundMoveCommand = SpeechDecoder.FindCommand(command, PossibleMoveCommands);
+        FoundMoveCommand = SpeechDecoder.speechDecoder.FindCommand(command, PossibleMoveCommands);
+        
+        if (FoundMoveCommand && Raycaster.rayCaster.hitSomething) {
 
-        if (FoundMoveCommand /* || go */) {
-            SpeechDecoder.CommandWasFound = true;
-            if (RayCaster.hitBottom) {
-                sentHit = RayCaster.hit;
+            sentHit = Raycaster.rayCaster.hit;
+            hitBottom = sentHit.transform.CompareTag("Bottom") && sentHit.distance <= maxDistanceBottom;
+            if (hitBottom && sentHit.transform.GetComponent<InteractableOnPoint>() != null) {
+                SpeechDecoder.speechDecoder.CommandWasFound = true;
                 posToMove = new Vector3(sentHit.point.x, transform.position.y, sentHit.point.z);
                 teleporting = true;
             }
+            hitBottom = false;
 
         }
 

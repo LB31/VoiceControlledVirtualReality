@@ -12,6 +12,7 @@ public class SpeechCreate : MonoBehaviour
 
     private bool FoundCreateCommand;
     private GameObject FoundPrefab;
+    public float maxDistanceCreate = 6;
 
     void Start()
     {
@@ -19,7 +20,7 @@ public class SpeechCreate : MonoBehaviour
         AllPrefabs = Resources.LoadAll<GameObject>("Prefabs");
 
         // Register this class to get notified, when the user entered a message
-        SpeechDecoder.CommandTransmitter += CreateObject;
+        SpeechDecoder.speechDecoder.CommandTransmitter += CreateObject;
     }
 
     
@@ -30,12 +31,26 @@ public class SpeechCreate : MonoBehaviour
 
     void CreateObject(string command) {
 
-        FoundCreateCommand = SpeechDecoder.FindCommand(command, PossibleCreateCommands);
-        FoundPrefab = SpeechDecoder.FindPrefab(command, AllPrefabs);
+        FoundCreateCommand = SpeechDecoder.speechDecoder.FindCommand(command, PossibleCreateCommands);
+        FoundPrefab = SpeechDecoder.speechDecoder.FindPrefab(command, AllPrefabs);
 
         if (FoundCreateCommand && FoundPrefab != null) {
-            SpeechDecoder.CommandWasFound = true;
-            Vector3 pointToSpawn = new Vector3(RayCaster.spawnPoint.x, RayCaster.spawnPoint.y + 3, RayCaster.spawnPoint.z);
+            SpeechDecoder.speechDecoder.CommandWasFound = true;
+
+            RaycastHit hit = Raycaster.rayCaster.hit;
+            Vector3 fwd = Raycaster.rayCaster.fwd;
+
+            // Creates a maxDistanceCreate long Ray to get the position at its end
+            Ray ray = new Ray(transform.position, fwd);
+            Vector3 spawnPoint = ray.GetPoint(maxDistanceCreate);
+
+            // When a wall was hit, create the object slightly in front of it
+            if (Raycaster.rayCaster.hitSomething && hit.transform.CompareTag("Wall")) {
+                // Set the position for the object before the wall
+                spawnPoint = hit.point - fwd;
+            }
+
+            Vector3 pointToSpawn = new Vector3(spawnPoint.x, spawnPoint.y + 3, spawnPoint.z);
             Instantiate(FoundPrefab, pointToSpawn, Quaternion.identity);
             }
 

@@ -8,7 +8,7 @@ public class SpeechMenu : MonoBehaviour
     void Start()
     {
         // Registrate this class to get notified, when the user entered a message
-        SpeechDecoder.CommandTransmitter += ToggleMenu;
+        SpeechDecoder.speechDecoder.CommandTransmitter += ToggleMenu;
     }
 
     

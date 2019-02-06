@@ -64,7 +64,7 @@
     <Compile Include="Assets\_Scripts\GyroController.cs" />
     <Compile Include="Assets\_Scripts\InteractableOnPoint.cs" />
     <Compile Include="Assets\_Scripts\MenuController.cs" />
-    <Compile Include="Assets\_Scripts\RayCaster.cs" />
+    <Compile Include="Assets\_Scripts\Raycaster.cs" />
     <Compile Include="Assets\_Scripts\SpeechCreate.cs" />
     <Compile Include="Assets\_Scripts\SpeechDecoder.cs" />
     <Compile Include="Assets\_Scripts\SpeechMenu.cs" />

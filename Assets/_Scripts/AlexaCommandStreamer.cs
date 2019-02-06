@@ -27,7 +27,7 @@ public class AlexaCommandStreamer : MonoBehaviour
         //string[] commands_array = command.Split(" "[0]);
         //CreateObject(commands_array);
         print(command);
-        SpeechDecoder.CommandTransmitter(command);
+        SpeechDecoder.speechDecoder.CommandTransmitter(command);
       
     }
 

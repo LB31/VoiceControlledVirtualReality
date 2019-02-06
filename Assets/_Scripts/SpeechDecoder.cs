@@ -9,32 +9,37 @@ using UnityEngine.UI;
 public class SpeechDecoder : MonoBehaviour
 {
 
+    public static SpeechDecoder speechDecoder;
+    // Colored indicators if the user was understood. Assigned in the inspector
     public GameObject[] AllIndicators;
-    // TODO: Source this out into a game manager
+
     public AlexaCommandStreamer acs;
     public SpeechSandboxStreaming sss;
     public GyroController gc;
 
     public delegate void AllCommandsFinder(string wholeCommand);
-    public static AllCommandsFinder CommandTransmitter;
+    public AllCommandsFinder CommandTransmitter;
 
 
-    public static bool CommandWasFound;
+    public bool CommandWasFound;
 
     public Behaviour[] behaviours;
 
 
+
     void Start() {
 
-
+        speechDecoder = this;
         CheckStartMenuSettings();
 
         StartCoroutine(RegisterRepresenterAfterSeconds(2));
 
+        /* Experiment to deactivate all scripts of an object; Later on for the menu
         behaviours = gameObject.GetComponentsInChildren<Behaviour>();
         foreach (var item in behaviours) {
             item.enabled = false;
         }
+        */
     }
 
     // Ensures that the command representer is at the last position of the delegate
@@ -65,7 +70,7 @@ public class SpeechDecoder : MonoBehaviour
 
 
     // Can be called by each action class to test if one of their command words were used
-    public static bool FindCommand(string userCommand, string[] commandCollection) {
+    public bool FindCommand(string userCommand, string[] commandCollection) {
         if (commandCollection.Any(userCommand.Contains)) {
             return true;
         }
@@ -74,7 +79,7 @@ public class SpeechDecoder : MonoBehaviour
     }
 
 
-    public static GameObject FindPrefab(string userCommand, GameObject[] possibleObjects) {
+    public GameObject FindPrefab(string userCommand, GameObject[] possibleObjects) {
         bool somethingFound = false;
         foreach (GameObject prefab in possibleObjects) {
             if (userCommand.Contains(prefab.name.ToLower()) && !somethingFound) {
@@ -101,20 +106,16 @@ public class SpeechDecoder : MonoBehaviour
         }
 
         float fadeDuration = 0.5f;
-        if (understood) {
+
 
             for (float i = 0; i <= 1; i += Time.deltaTime / fadeDuration) {
                 FadeInOut(finalColor, i);
                 yield return null;   
             }
-        } else {
-            for (float i = 0; i <= 1; i += Time.deltaTime / fadeDuration) {
-                FadeInOut(finalColor, i);
-                yield return null;
-            }
-        }
-        // How long to wait until fading out
+       
+        // Wait until fading out
         yield return new WaitForSeconds(fadeDuration);
+
         for (float i = 1; i >= 0; i -= Time.deltaTime / fadeDuration) {
             FadeInOut(finalColor, i);
             yield return null;
