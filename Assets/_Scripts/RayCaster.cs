@@ -17,6 +17,7 @@ public class Raycaster : MonoBehaviour
 
     // Allow interaction classes to get information of this fields
     public RaycastHit hit;
+    // Says actually if RaycastHit is filled with something
     public bool hitSomething;
     public Vector3 fwd;
 

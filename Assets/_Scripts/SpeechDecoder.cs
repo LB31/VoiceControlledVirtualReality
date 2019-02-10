@@ -79,7 +79,7 @@ public class SpeechDecoder : MonoBehaviour
     }
 
 
-    public GameObject FindPrefab(string userCommand, GameObject[] possibleObjects) {
+    public GameObject FindObject(string userCommand, GameObject[] possibleObjects) {
         bool somethingFound = false;
         foreach (GameObject prefab in possibleObjects) {
             if (userCommand.Contains(prefab.name.ToLower()) && !somethingFound) {

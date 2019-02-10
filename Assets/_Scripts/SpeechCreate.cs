@@ -32,7 +32,7 @@ public class SpeechCreate : MonoBehaviour
     void CreateObject(string command) {
 
         FoundCreateCommand = SpeechDecoder.speechDecoder.FindCommand(command, PossibleCreateCommands);
-        FoundPrefab = SpeechDecoder.speechDecoder.FindPrefab(command, AllPrefabs);
+        FoundPrefab = SpeechDecoder.speechDecoder.FindObject(command, AllPrefabs);
 
         if (FoundCreateCommand && FoundPrefab != null) {
             SpeechDecoder.speechDecoder.CommandWasFound = true;
@@ -43,9 +43,10 @@ public class SpeechCreate : MonoBehaviour
             // Creates a maxDistanceCreate long Ray to get the position at its end
             Ray ray = new Ray(transform.position, fwd);
             Vector3 spawnPoint = ray.GetPoint(maxDistanceCreate);
+          
 
             // When a wall was hit, create the object slightly in front of it
-            if (Raycaster.rayCaster.hitSomething && hit.transform.CompareTag("Wall")) {
+            if (Raycaster.rayCaster.hitSomething && hit.transform.CompareTag("Wall") && hit.distance <= maxDistanceCreate) {
                 // Set the position for the object before the wall
                 spawnPoint = hit.point - fwd;
             }
