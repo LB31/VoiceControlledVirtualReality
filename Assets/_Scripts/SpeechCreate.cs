@@ -52,7 +52,7 @@ public class SpeechCreate : MonoBehaviour
             }
 
             Vector3 pointToSpawn = new Vector3(spawnPoint.x, spawnPoint.y + 3, spawnPoint.z);
-            Instantiate(FoundPrefab, pointToSpawn, Quaternion.identity);
+            Instantiate(FoundPrefab, pointToSpawn, FoundPrefab.transform.rotation);
             }
 
         }

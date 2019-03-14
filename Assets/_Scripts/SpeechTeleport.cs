@@ -42,7 +42,7 @@ public class SpeechTeleport : MonoBehaviour
             hitBottom = sentHit.transform.CompareTag("Bottom") && sentHit.distance <= maxDistanceBottom;
             if (hitBottom && sentHit.transform.GetComponent<InteractableOnPoint>() != null) {
                 SpeechDecoder.speechDecoder.CommandWasFound = true;
-                posToMove = new Vector3(sentHit.point.x, transform.position.y, sentHit.point.z);
+                posToMove = new Vector3(sentHit.point.x, sentHit.point.y + 2, sentHit.point.z);
                 teleporting = true;
             }
             hitBottom = false;

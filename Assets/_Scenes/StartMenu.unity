@@ -900,6 +900,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playInVR: 1
+  sceneToLoad: TerrainExperiment
 --- !u!4 &1567711200
 Transform:
   m_ObjectHideFlags: 0

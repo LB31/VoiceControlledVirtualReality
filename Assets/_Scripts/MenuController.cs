@@ -9,6 +9,7 @@ public class MenuController : MonoBehaviour
 {
     public bool playInVR = true;
 
+    public string sceneToLoad = "Main";
 
     // Call via `StartCoroutine(SwitchToVR())` from your code. Or, use
     // `yield SwitchToVR()` if calling from inside another coroutine.
@@ -33,7 +34,7 @@ public class MenuController : MonoBehaviour
         withTouch = playInVR ? 0 : 1;
         PlayerPrefs.SetInt("WithTouch", withTouch);
 
-        SceneManager.LoadScene("Main");
+        SceneManager.LoadScene(sceneToLoad);
     }
 
     public void PlayWithWatson() {

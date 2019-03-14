@@ -4,6 +4,7 @@ using System.Net;
 using System.IO;
 using SimpleJSON;
 using System.Linq;
+using UnityEngine.Networking;
 
 public class AlexaCommandStreamer : MonoBehaviour
 {
@@ -12,10 +13,13 @@ public class AlexaCommandStreamer : MonoBehaviour
 
     IEnumerator DownloadWebService() {
         while (true) {
-            WWW w = new WWW("http://voicevr.herokuapp.com/?command");
-            yield return w;
-            
-            ExtractCommand(w.text);
+            //WWW w = new WWW("http://voicevr.herokuapp.com/?command");
+            UnityWebRequest www = UnityWebRequest.Get("http://voicevr.herokuapp.com/?command");
+            //yield return w;
+            yield return www.SendWebRequest();
+
+            //ExtractCommand(w.text)
+            ExtractCommand(www.downloadHandler.text);
 
         }
     }
