@@ -1,10 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System.Net;
-using System.IO;
 using SimpleJSON;
-using System.Linq;
 using UnityEngine.Networking;
+using System;
 
 public class AlexaCommandStreamer : MonoBehaviour
 {
@@ -13,26 +11,28 @@ public class AlexaCommandStreamer : MonoBehaviour
 
     IEnumerator DownloadWebService() {
         while (true) {
-            //WWW w = new WWW("http://voicevr.herokuapp.com/?command");
-            UnityWebRequest www = UnityWebRequest.Get("http://voicevr.herokuapp.com/?command");
-            //yield return w;
-            yield return www.SendWebRequest();
 
-            //ExtractCommand(w.text)
+            //WWW w = new WWW("http://voicevr.herokuapp.com/?command");
+            //yield return w;
+            //ExtractCommand(w.text);
+
+            UnityWebRequest www = UnityWebRequest.Get("https://voicevr.herokuapp.com/?command");
+            yield return www.SendWebRequest();
             ExtractCommand(www.downloadHandler.text);
 
         }
     }
 
     void ExtractCommand(string json) {
-        JSONNode jsonstring = JSON.Parse(json);
-        string command = jsonstring["command"];
+        //JSONNode jsonstring = JSON.Parse(json);
+        //string command = jsonstring["command"];
+        string command = JsonUtility.FromJson<CommandClass>(json).command;
         if (command.Length == 0) { return; }
-        //string[] commands_array = command.Split(" "[0]);
-        //CreateObject(commands_array);
+
+
         print(command);
         SpeechDecoder.speechDecoder.CommandTransmitter(command);
-      
+       
     }
 
     
@@ -44,4 +44,10 @@ public class AlexaCommandStreamer : MonoBehaviour
     }
 
 
+}
+
+[Serializable]
+public class CommandClass
+{
+    public string command;
 }

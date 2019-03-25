@@ -75,6 +75,7 @@
     <Compile Include="Assets\GoogleVR\Legacy\Editor\Audio\GvrAudioRoomEditor.cs" />
     <Compile Include="Assets\GoogleVR\Legacy\Editor\Audio\GvrAudioSoundfieldEditor.cs" />
     <Compile Include="Assets\GoogleVR\Legacy\Editor\Audio\GvrAudioSourceEditor.cs" />
+    <Compile Include="Assets\Unity-Logs-Viewer\Reporter\Editor\ReporterEditor.cs" />
     <Compile Include="Assets\Watson\Scripts\Editor\IBMCloudSignup.cs" />
     <Compile Include="Assets\Watson\Scripts\Editor\WatsonMenu.cs" />
     <Compile Include="Assets\Watson\ThirdParty\FullSerializer\Aot\Editor\fsAotConfigurationEditor.cs" />
