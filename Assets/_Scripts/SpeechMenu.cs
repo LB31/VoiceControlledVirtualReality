@@ -38,6 +38,15 @@ public class SpeechMenu : MonoBehaviour
             SpeechDecoder.speechDecoder.CommandWasFound = true;
             MenuObject.SetActive(true);
         }
+
+        Behaviour[] behaviours;
+        behaviours = gameObject.GetComponents<Behaviour>();
+        foreach (var item in behaviours) {
+            if(item.name != this.name)
+            item.enabled = false;
+        }
+
+
     }
 
 
