@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 Build from DESKTOP-0QHD64C at 27.08.2019 00:11:27
+=======
+Build from DESKTOP-34VE6TB at 13.05.2019 12:46:52
+>>>>>>> 5ea748d233ddd77383026ceabc750bbe8626a10c
