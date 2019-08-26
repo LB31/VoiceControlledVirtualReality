@@ -6,13 +6,15 @@ public class SpeechCreate : MonoBehaviour
 {
 
     [SerializeField]
-    string[] PossibleCreateCommands;
+    private string[] PossibleCreateCommands;
     [SerializeField]
-    public GameObject[] AllPrefabs;
+    private GameObject[] AllPrefabs;
+
+    public float maxDistanceCreate = 6;
 
     private bool FoundCreateCommand;
     private GameObject FoundPrefab;
-    public float maxDistanceCreate = 6;
+    
 
     void Start()
     {

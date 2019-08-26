@@ -71,7 +71,8 @@ public class SpeechDecoder : MonoBehaviour
 
     // Can be called by each action class to test if one of their command words were used
     public bool FindCommand(string userCommand, string[] commandCollection) {
-        if (commandCollection.Any(userCommand.Contains)) {
+        // If any of the strings in commandCollection contains a substring of userCommand 
+        if (commandCollection.Any(userCommand.Contains)) { // short cersion of commmandCollection.Any(s => userCommand.Contains(s))
             return true;
         }
 
@@ -80,9 +81,8 @@ public class SpeechDecoder : MonoBehaviour
 
 
     public GameObject FindObject(string userCommand, GameObject[] possibleObjects) {
-        bool somethingFound = false;
         foreach (GameObject prefab in possibleObjects) {
-            if (userCommand.Contains(prefab.name.ToLower()) && !somethingFound) {
+            if (userCommand.Contains(prefab.name.ToLower())) {
                 return prefab;
             }
         }
@@ -97,11 +97,9 @@ public class SpeechDecoder : MonoBehaviour
     }
 
     IEnumerator IndicateIfCommandUnderstood(bool understood) {
-        foreach (GameObject indicator in AllIndicators) {
-            indicator.SetActive(true);
-        }
         Color finalColor = understood ? Color.green : Color.red;
         foreach (GameObject indicator in AllIndicators) {
+            indicator.SetActive(true);
             indicator.GetComponent<Image>().color = finalColor;
         }
 
